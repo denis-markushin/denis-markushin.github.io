@@ -1,0 +1,10 @@
+services:
+  mkdocs:
+    build:
+      context: .
+      dockerfile: mkdocs.Dockerfile
+    ports:
+      - "8000:8000"
+    restart: always
+    volumes:
+      - .:/docs
