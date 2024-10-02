@@ -1,2 +1,3 @@
 # Blog
 
+Lorem ipsum
