@@ -5,10 +5,11 @@ theme:
   name: material
   features:
     - navigation.indexes
-    - header.autohide
 
 plugins:
   - search
-  - tags
   - blog:
       blog_dir: .
+  - tags
+  - minify:
+      minify_html: true
