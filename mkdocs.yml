@@ -9,7 +9,7 @@ theme:
 plugins:
   - search
   - blog:
-      blog_dir: .
+      blog_dir: posts
   - tags
   - minify:
       minify_html: true
