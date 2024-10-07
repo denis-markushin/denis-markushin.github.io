@@ -8,10 +8,10 @@ tags:
   - Jooq
 ---
 
-# Integrating Jooq with Spring Data
+# Integrating [Jooq] with Spring Data
 
 In this post, we will explore the [jooq-utils] library, which provides seamless integration between Spring Data and
-Jooq. With [jooq-utils], you can retrieve data using Jooq and get a `Page` object (from
+[Jooq]. With [jooq-utils], you can retrieve data using Jooq and get a `Page` object (from
 `org.springframework.data.domain.Page`) as a result, and easily use `Pageable` as input for repository methods.
 
 <!-- more -->
@@ -44,23 +44,23 @@ import org.dema.jooq.JooqUtils
 @Component
 class UsersRepository : AbstractRepository<Users, UsersRecord>(table = USERS) {
 
-  fun getPageBy(pageable: Pageable, condition: Condition): Page<UsersRecord> {
-    val query = baseQuery({ condition })
-    return JooqUtils.paginate(dsl, query, pageable, USERS)
-  }
+    fun getPageBy(pageable: Pageable, condition: Condition): Page<UsersRecord> {
+        val query = baseQuery({ condition })
+        return JooqUtils.paginate(dsl, query, pageable, USERS)
+    }
 
-  private fun baseQuery(vararg where: (Users) -> Condition): SelectConditionStep<UsersRecord> {
-    return dsl.selectFrom(USERS)
-      .where(foldConditions(where))
-  }
+    private fun baseQuery(vararg where: (Users) -> Condition): SelectConditionStep<UsersRecord> {
+        return dsl.selectFrom(USERS)
+            .where(foldConditions(where))
+    }
 }
 ```
 
 In the above code:
 
-We define a UsersRepository class that extends AbstractRepository.
-The getPageBy() method allows pagination of the user records based on the provided Condition and Pageable parameters.
-The actual pagination logic is handled by JooqUtils.paginate().
+We define a `UsersRepository` class that extends `AbstractRepository`.
+The `getPageBy()` method allows pagination of the user records based on the provided Condition and Pageable parameters.
+The actual pagination logic is handled by `JooqUtils.paginate()`.
 
 ### 2. Use the Repository in a Service
 
@@ -76,15 +76,15 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional(readOnly = true)
 class UsersService(
-  @Qualifier("mvcConversionService") private val cs: ConversionService,
-  private val usersRepository: UsersRepository,
+    @Qualifier("mvcConversionService") private val cs: ConversionService,
+    private val usersRepository: UsersRepository,
 ) {
 
-  fun search(filter: UsersFilter, pageable: Pageable): UsersPage {
-    val filterCondition: Condition = filter?.let(cs::convert) ?: noCondition()
-    val userRecordsPage: Page<UsersRecord> = usersRepository.getPageBy(pageable, filterCondition)
-    return cs.convert(userRecordsPage)!!
-  }
+    fun search(filter: UsersFilter, pageable: Pageable): UsersPage {
+        val filterCondition: Condition = filter?.let(cs::convert) ?: noCondition()
+        val userRecordsPage: Page<UsersRecord> = usersRepository.getPageBy(pageable, filterCondition)
+        return cs.convert(userRecordsPage)!!
+    }
 }
 ```
 
@@ -96,9 +96,9 @@ In the UsersService class:
 
 ### 3. Conclusion
 
-That’s it! You now have a working example of integrating Spring Data’s pagination functionality into Jooq using
-`jooq-utils`. The provided repository and service examples demonstrate how to handle pagination in your Jooq queries
-with
-minimal code changes.
+You now have a working example of integrating Spring Data’s pagination functionality into Jooq using
+[jooq-utils]. The provided repository and service examples demonstrate how to handle pagination in your Jooq queries
+with minimal code changes.
 
 [jooq-utils]: https://github.com/denis-markushin/common-libs/tree/main/jooq-utils
+[jooq]: https://www.jooq.org/
