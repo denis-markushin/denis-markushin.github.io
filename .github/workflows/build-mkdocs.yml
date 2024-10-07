@@ -1,8 +1,9 @@
-name: ci
+name: build-mkdocs
 on:
   push:
     branches:
       - main
+      - feature/*
 permissions:
   contents: write
 jobs:

@@ -1,15 +1,69 @@
-site_name: Denis Markushin
-site_url: https://denis-markushin.github.io/
+# Project information
+site_name: Denis Markushin`s blog
+site_url: https://denis-markushin.github.io
+site_author: Denis Markushin
+site_description: >-
+  TODO
 
+# Repository
+repo_name: denis-markushin/denis-markushin.github.io
+repo_url: https://github.com/denis-markushin/denis-markushin.github.io
+
+# Copyright
+copyright: Copyright &copy; 2024 Denis Markushin
+
+# Configuration
 theme:
   name: material
   features:
+    - content.code.copy
     - navigation.indexes
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.top
+    - navigation.expand
+    - navigation.footer
+    - navigation.sections
+    - search.highlight
+    - search.share
+    - search.suggest
+  icon:
+    logo: logo
 
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - toc:
+      permalink: '#'
+  - admonition
+  - pymdownx.details
+
+# Plugins
 plugins:
-  - search
   - blog:
-      blog_dir: .
-  - tags
+      blog_dir: '.'
+      archive: true
+      categories: true
+  - search:
+      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - minify:
       minify_html: true
+  - tags
+
+remote_branch: gh-pages
