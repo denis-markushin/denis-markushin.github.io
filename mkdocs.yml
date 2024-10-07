@@ -3,7 +3,7 @@ site_name: Denis Markushin`s blog
 site_url: https://denis-markushin.github.io
 site_author: Denis Markushin
 site_description: >-
-  TODO
+  Thoughts and Musings on the world of Programming and beyond
 
 # Repository
 repo_name: denis-markushin/denis-markushin.github.io
@@ -65,5 +65,10 @@ plugins:
   - minify:
       minify_html: true
   - tags
+  - rss:
+      match_path: "/posts/.*"
+      date_from_meta:
+        as_creation: date.created
+        as_update: date.updated
 
 remote_branch: gh-pages
