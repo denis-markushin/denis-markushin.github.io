@@ -70,5 +70,8 @@ plugins:
       date_from_meta:
         as_creation: date.created
         as_update: date.updated
+  - glightbox
 
 remote_branch: gh-pages
+
+strict: true
