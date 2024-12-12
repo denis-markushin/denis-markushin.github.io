@@ -33,12 +33,16 @@ theme:
 
   palette:
     - scheme: default
+      primary: teal
+      accent: teal
       toggle:
-        icon: material/weather-night
+        icon: material/weather-sunny
         name: Switch to dark mode
     - scheme: slate
+      primary: teal
+      accent: teal
       toggle:
-        icon: material/brightness-7
+        icon: material/weather-night
         name: Switch to light mode
 
 markdown_extensions:
