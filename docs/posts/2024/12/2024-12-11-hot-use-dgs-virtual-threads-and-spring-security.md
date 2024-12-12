@@ -124,8 +124,8 @@ class AsyncExecutorConfig {
 This ensures that the security context is properly propagated while using virtual threads.
 
 !!! note
-If you enable `dgs.graphql.virtualthreads.enabled=true`, you must disable this property to avoid conflicts with the
-`DgsAutoConfiguration`-provided bean that does not propagate the `SecurityContext`.
+    If you enable `dgs.graphql.virtualthreads.enabled=true`, you must disable this property to avoid conflicts with the
+    `DgsAutoConfiguration`-provided bean that does not propagate the `SecurityContext`.
 
 ## Results
 
