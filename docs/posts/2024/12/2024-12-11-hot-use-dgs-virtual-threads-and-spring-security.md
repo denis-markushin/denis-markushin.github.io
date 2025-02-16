@@ -1,7 +1,6 @@
 ---
 date: 2024-12-11
 categories:
-
   - Kotlin
   - DGS
 tags:
