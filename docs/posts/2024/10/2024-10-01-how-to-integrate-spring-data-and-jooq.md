@@ -8,7 +8,7 @@ tags:
   - Jooq
 ---
 
-# Integrating [Jooq](https://www.jooq.org/) with Spring Data
+# Integrating Jooq with Spring Data
 
 In this post, we will explore the [jooq-utils] library, which provides seamless integration between Spring Data and
 Jooq. With [jooq-utils], you can retrieve data using Jooq and get a [`org.springframework.data.domain.Page`](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Page.html)
