@@ -14,6 +14,7 @@ copyright: Copyright &copy; 2024 Denis Markushin
 
 # Configuration
 theme:
+  custom_dir: overrides
   name: material
   features:
     - content.code.copy
@@ -30,7 +31,6 @@ theme:
     - search.suggest
   icon:
     logo: logo
-
   palette:
     - scheme: default
       primary: teal
@@ -44,6 +44,9 @@ theme:
       toggle:
         icon: material/weather-night
         name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -65,7 +68,7 @@ plugins:
       archive: true
       categories: true
   - search:
-      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - minify:
       minify_html: true
   - tags
