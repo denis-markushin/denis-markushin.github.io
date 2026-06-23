@@ -1,13 +1,17 @@
 ---
-date: 2025-02-23
+authors:
+  - denis
+date:
+  created: 2025-02-23
+  updated: 2026-06-22
 categories:
-  - Kotlin
-  - Spring Boot
   - Testing
 tags:
+  - testing
   - kotlin
   - spring-boot
-  - testing
+  - testcontainers
+  - assertk
 ---
 
 # Level Up Your Kotlin and Spring Boot Testing: Quick Tips and Tricks
@@ -176,7 +180,86 @@ fun Int.uuid(): UUID = UUID.fromString("00000000-0000-0000-0000-${this.toString(
 val entity = anEntity(id = 1.uuid())
 ```
 
+## 5. Integration Tests on a Testcontainers Base Class
+
+For integration tests, put all the wiring in a reusable base class: real infrastructure via Testcontainers,
+a clean database before each test, and tiny helpers to persist records. Subclasses stay focused on behavior.
+
+```kotlin
+@ActiveProfiles("integration-test")
+@TestInstance(Lifecycle.PER_CLASS)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(initializers = [MinioInitializer::class, KafkaInitializer::class])
+abstract class AbstractIntegrationTest {
+
+    @Autowired
+    protected lateinit var dsl: DSLContext
+
+    @Autowired
+    protected lateinit var queryExecutor: DgsQueryExecutor
+
+    @BeforeEach
+    fun cleanup() {
+        TABLES_TO_CLEANUP.forEach { dsl.truncate(it).cascade().execute() }
+    }
+
+    protected fun <R : UpdatableRecord<R>> R.storeRec(): R = also {
+        dsl.attach(it)
+        it.store()
+    }
+}
+```
+
+**Why it's useful:**
+
+* **Real infrastructure:** Postgres, Kafka and object storage run in containers, not mocks — no H2 surprises.
+* **Deterministic state:** `TRUNCATE ... CASCADE` before each test removes cross-test coupling.
+* **Less boilerplate:** `storeRec()` attaches and stores any jOOQ record in one call.
+
+## 6. Type-Safe GraphQL Operations in Tests
+
+Build GraphQL queries with the DGS code-generated client instead of raw strings, then extract a typed result
+and assert with `assertk`.
+
+```kotlin
+@Test
+fun `byWorkItem returns comments of the work item`() {
+    val project = TestProjectsRecord().storeRec()
+    val workItem = TestWorkItemsRecord(projectId = project.id).storeRec()
+    repeat(3) {
+        CommentsRecord().apply {
+            id = UUID.randomUUID()
+            workItemId = workItem.id
+            authorId = UUID.randomUUID()
+            text = "c$it"
+            createdAt = LocalDateTime.now().minusSeconds(it.toLong())
+            updatedAt = LocalDateTime.now()
+        }.storeRec()
+    }
+
+    val query = DgsClient.buildQuery(gqlSerializer) {
+        comment {
+            byWorkItem(workItemId = workItem.id, first = 10, sort = CommentSort.CREATED_AT_DESC) {
+                edges { node { id; text } }
+            }
+        }
+    }
+
+    val nodes = queryExecutor.executeAndExtractJsonPathAsObject(
+        query, "data.comment.byWorkItem.edges[*].node",
+        object : TypeRef<List<Comment>>() {},
+    )
+
+    assertThat(nodes).hasSize(3)
+}
+```
+
+**Why it's useful:**
+
+* **No stringly-typed queries:** the codegen client catches typos and schema drift at compile time.
+* **Typed extraction:** `executeAndExtractJsonPathAsObject` with a `TypeRef` returns real domain types.
+* **Readable assertions:** `assertk` keeps the check expressive — pair it with the factory pattern from tip #1.
+
 ## Conclusion
 
-By combining these techniques, you’ll streamline your test setups, reduce boilerplate, and keep your focus on writing
-meaningful test logic. Happy testing!
+By combining these techniques — from record factories to a shared Testcontainers base class and type-safe GraphQL operations — you’ll streamline both unit and integration test setups, reduce boilerplate, and keep your focus on writing meaningful test logic. Happy testing!

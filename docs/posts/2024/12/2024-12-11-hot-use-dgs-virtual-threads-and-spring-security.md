@@ -1,11 +1,15 @@
 ---
+authors:
+  - denis
 date: 2024-12-11
 categories:
-  - Kotlin
-  - DGS
+  - GraphQL & DGS
 tags:
-  - Kotlin
-  - DGS
+  - dgs
+  - graphql
+  - virtual-threads
+  - spring-security
+  - kotlin
 ---
 
 # How to Use Virtual Threads in DGS

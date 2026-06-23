@@ -1,12 +1,14 @@
 ---
+authors:
+  - denis
 date: 2024-10-10
 categories:
-  - Plugins 
+  - Spring Boot
 tags:
-  - Gradle
-  - SchemaSpy
-  - Database
-  - Testcontainers
+  - gradle
+  - schemaspy
+  - database
+  - testcontainers
 ---
 
 # How to generate Interactive Database Documentation with SchemaSpy and Gradle
