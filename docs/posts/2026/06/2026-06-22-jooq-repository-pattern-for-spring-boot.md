@@ -163,8 +163,38 @@ dema:
 - **Configurable column names:** the column names are properties, so renaming a column in a migration is a one-line config change.
 - **No forgotten updates:** it is impossible to call `store()` and accidentally leave `updated_at` stale.
 
+## 7. Testing the repository layer
+
+Repositories are tested against a real Postgres instance, never a mock or H2. I run them on the shared `AbstractIntegrationTest` Testcontainers base from [Level Up Your Kotlin and Spring Boot Testing](../../2025/02/2025-02-23-kotlin-and-spring-boot-testing.md#5-integration-tests-on-a-testcontainers-base-class), which truncates tables before each test and exposes `storeRec()` to persist any jOOQ record:
+
+```kotlin
+@Test
+fun `commenterIdsOf returns the distinct authors of a work item`() {
+    val workItem = TestWorkItemsRecord().storeRec()
+    val author = UUID.randomUUID()
+    repeat(2) {
+        CommentsRecord().apply {
+            id = UUID.randomUUID()
+            workItemId = workItem.id
+            authorId = author
+            text = "c$it"
+        }.storeRec()
+    }
+
+    val authors = commentRepo.commenterIdsOf(workItem.id)
+
+    assertThat(authors).containsExactly(author)
+}
+```
+
+**Why it matters:**
+
+- **Real SQL, real types:** the query runs against actual Postgres, so a wrong column or cast fails the test, not production.
+- **No `DSLContext` in the test:** the repository is the unit under test; `storeRec` from the base seeds rows without touching `dsl` directly.
+- **Deterministic:** `TRUNCATE ... CASCADE` before each test (from the base) means no cross-test bleed.
+
 ## Wrapping up
 
 These six patterns — codegen from real migrations, one repo per table, baked-in soft-delete, SQL colocation, a hard `DSLContext` boundary, and automatic timestamps — give you a data layer that is typed end-to-end, easy to read, and straightforward to test.
 
-If you are coming from Spring Data JPA, the earlier post [How to Integrate Spring Data and jOOQ](../../2024/10/2024-10-01-how-to-integrate-spring-data-and-jooq.md) covers how jOOQ fits into a Spring Boot project alongside (or instead of) Spring Data. For testing the repository layer against a real database, the patterns in [Level Up Your Kotlin and Spring Boot Testing](../../2025/02/2025-02-23-kotlin-and-spring-boot-testing.md) apply directly.
+If you are coming from Spring Data JPA, the earlier post [How to Integrate Spring Data and jOOQ](../../2024/10/2024-10-01-how-to-integrate-spring-data-and-jooq.md) covers how jOOQ fits into a Spring Boot project alongside (or instead of) Spring Data. For testing this repository layer against a real database, see [section 7 above](#7-testing-the-repository-layer), which builds on [Level Up Your Kotlin and Spring Boot Testing](../../2025/02/2025-02-23-kotlin-and-spring-boot-testing.md).
