@@ -218,6 +218,56 @@ One caveat: Spring Security's `SecurityContext` is stored in a `ThreadLocal` and
 - Throughput improvements show up immediately under load without changing resolver code.
 - The Security context caveat is easy to miss — handle it once in infrastructure, not per resolver.
 
+## 6. Testing resolvers
+
+Resolvers are worth an integration test that drives the whole path: HTTP-less GraphQL execution against a real database. I run these on the shared `AbstractIntegrationTest` Testcontainers base from [Level Up Your Kotlin and Spring Boot Testing](../../2025/02/2025-02-23-kotlin-and-spring-boot-testing.md#5-integration-tests-on-a-testcontainers-base-class), extended with a `DgsQueryExecutor`:
+
+```kotlin
+@Autowired
+protected lateinit var queryExecutor: DgsQueryExecutor
+```
+
+Build the query with the DGS code-generated client instead of a raw string, execute it, and extract a typed result with `assertk` on the outcome:
+
+```kotlin
+@Test
+fun `byWorkItem returns comments of the work item`() {
+    val project = TestProjectsRecord().storeRec()
+    val workItem = TestWorkItemsRecord(projectId = project.id).storeRec()
+    repeat(3) {
+        CommentsRecord().apply {
+            id = UUID.randomUUID()
+            workItemId = workItem.id
+            authorId = UUID.randomUUID()
+            text = "c$it"
+            createdAt = LocalDateTime.now().minusSeconds(it.toLong())
+            updatedAt = LocalDateTime.now()
+        }.storeRec()
+    }
+
+    val query = DgsClient.buildQuery(gqlSerializer) {
+        comment {
+            byWorkItem(workItemId = workItem.id, first = 10, sort = CommentSort.CREATED_AT_DESC) {
+                edges { node { id; text } }
+            }
+        }
+    }
+
+    val nodes = queryExecutor.executeAndExtractJsonPathAsObject(
+        query, "data.comment.byWorkItem.edges[*].node",
+        object : TypeRef<List<Comment>>() {},
+    )
+
+    assertThat(nodes).hasSize(3)
+}
+```
+
+**Why it matters:**
+
+- **No stringly-typed queries:** the codegen client catches typos and schema drift at compile time.
+- **Typed extraction:** `executeAndExtractJsonPathAsObject` with a `TypeRef` returns real domain types, not raw maps.
+- **Real execution path:** the test drives the actual resolver, data loaders, and SQL — exactly what runs in production.
+
 ---
 
-These five patterns — namespace resolvers, entity fetchers, batch loaders, typed mutation outcomes, and virtual threads — cover the implementation side of the schema conventions described in the companion post. For the schema conventions that drive these resolver shapes, see [GraphQL Schema Design Conventions I Use with DGS and Federation](2026-06-22-graphql-schema-design-conventions-with-dgs.md).
+These patterns — namespace resolvers, entity fetchers, batch loaders, typed mutation outcomes, virtual threads, and an integration test that drives the whole stack — cover the implementation side of the schema conventions described in the companion post. For the schema conventions that drive these resolver shapes, see [GraphQL Schema Design Conventions I Use with DGS and Federation](2026-06-22-graphql-schema-design-conventions-with-dgs.md).
