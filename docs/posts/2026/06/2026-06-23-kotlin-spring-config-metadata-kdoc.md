@@ -4,7 +4,6 @@ authors:
 date:
   created: 2026-06-23
 categories:
-  - Kotlin
   - Spring Boot
 tags:
   - kotlin

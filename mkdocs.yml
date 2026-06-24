@@ -1,5 +1,5 @@
 # Project information
-site_name: Denis Markushin`s blog
+site_name: Denis Markushin's blog
 site_url: https://denis-markushin.github.io
 site_author: Denis Markushin
 site_description: >-
@@ -10,7 +10,7 @@ repo_name: denis-markushin/denis-markushin.github.io
 repo_url: https://github.com/denis-markushin/denis-markushin.github.io
 
 # Copyright
-copyright: Copyright &copy; 2024 Denis Markushin
+copyright: Copyright &copy; 2024&ndash;2026 Denis Markushin
 
 # Configuration
 theme:
@@ -18,35 +18,49 @@ theme:
   name: material
   features:
     - content.code.copy
+    - content.code.annotate
+    - content.tooltips
     - navigation.indexes
     - navigation.instant
     - navigation.tracking
     - navigation.tabs
     - navigation.top
-    - navigation.expand
+    - navigation.path
     - navigation.footer
     - navigation.sections
+    - toc.follow
     - search.highlight
     - search.share
     - search.suggest
   icon:
-    logo: logo
+    logo: material/code-tags
   palette:
-    - scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
       primary: teal
       accent: teal
       toggle:
         icon: material/weather-sunny
         name: Switch to dark mode
-    - scheme: slate
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
       primary: teal
       accent: teal
       toggle:
         icon: material/weather-night
         name: Switch to light mode
   font:
-    text: Roboto
-    code: Roboto Mono
+    text: Inter
+    code: JetBrains Mono
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/denis-markushin
+      name: GitHub
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/denis-markushin
+      name: LinkedIn
 
 markdown_extensions:
   - pymdownx.highlight:

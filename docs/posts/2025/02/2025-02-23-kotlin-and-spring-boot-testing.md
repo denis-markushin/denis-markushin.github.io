@@ -195,9 +195,6 @@ abstract class AbstractIntegrationTest {
     @Autowired
     protected lateinit var dsl: DSLContext
 
-    @Autowired
-    protected lateinit var queryExecutor: DgsQueryExecutor
-
     @BeforeEach
     fun cleanup() {
         TABLES_TO_CLEANUP.forEach { dsl.truncate(it).cascade().execute() }
@@ -216,50 +213,13 @@ abstract class AbstractIntegrationTest {
 * **Deterministic state:** `TRUNCATE ... CASCADE` before each test removes cross-test coupling.
 * **Less boilerplate:** `storeRec()` attaches and stores any jOOQ record in one call.
 
-## 6. Type-Safe GraphQL Operations in Tests
+## 6. Where DGS and jOOQ test setups live
 
-Build GraphQL queries with the DGS code-generated client instead of raw strings, then extract a typed result
-and assert with `assertk`.
+These techniques are framework-agnostic. The layer-specific test setups build on the `AbstractIntegrationTest` base above and live with their topic:
 
-```kotlin
-@Test
-fun `byWorkItem returns comments of the work item`() {
-    val project = TestProjectsRecord().storeRec()
-    val workItem = TestWorkItemsRecord(projectId = project.id).storeRec()
-    repeat(3) {
-        CommentsRecord().apply {
-            id = UUID.randomUUID()
-            workItemId = workItem.id
-            authorId = UUID.randomUUID()
-            text = "c$it"
-            createdAt = LocalDateTime.now().minusSeconds(it.toLong())
-            updatedAt = LocalDateTime.now()
-        }.storeRec()
-    }
-
-    val query = DgsClient.buildQuery(gqlSerializer) {
-        comment {
-            byWorkItem(workItemId = workItem.id, first = 10, sort = CommentSort.CREATED_AT_DESC) {
-                edges { node { id; text } }
-            }
-        }
-    }
-
-    val nodes = queryExecutor.executeAndExtractJsonPathAsObject(
-        query, "data.comment.byWorkItem.edges[*].node",
-        object : TypeRef<List<Comment>>() {},
-    )
-
-    assertThat(nodes).hasSize(3)
-}
-```
-
-**Why it's useful:**
-
-* **No stringly-typed queries:** the codegen client catches typos and schema drift at compile time.
-* **Typed extraction:** `executeAndExtractJsonPathAsObject` with a `TypeRef` returns real domain types.
-* **Readable assertions:** `assertk` keeps the check expressive — pair it with the factory pattern from tip #1.
+* **Testing DGS resolvers** — typed GraphQL queries via `DgsQueryExecutor` and the code-generated client: see [Implementing DGS Resolvers → Testing resolvers](../../2026/06/2026-06-22-implementing-dgs-resolvers.md#6-testing-resolvers).
+* **Testing the jOOQ repository layer** — record factories and `storeRec` against real Postgres: see [A jOOQ Repository Pattern → Testing the repository layer](../../2026/06/2026-06-22-jooq-repository-pattern-for-spring-boot.md#7-testing-the-repository-layer).
 
 ## Conclusion
 
-By combining these techniques — from record factories to a shared Testcontainers base class and type-safe GraphQL operations — you’ll streamline both unit and integration test setups, reduce boilerplate, and keep your focus on writing meaningful test logic. Happy testing!
+By combining these techniques — from record factories to a shared Testcontainers base class — you’ll streamline both unit and integration test setups, reduce boilerplate, and keep your focus on writing meaningful test logic. The layer-specific setups (DGS resolvers, jOOQ repositories) build on the same base; follow the links above when you need them. Happy testing!

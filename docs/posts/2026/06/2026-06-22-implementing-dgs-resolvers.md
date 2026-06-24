@@ -210,7 +210,7 @@ dgs.graphql.virtualthreads.enabled=true
 
 This lets DGS run each data fetcher on a virtual thread, which meaningfully improves throughput on I/O-bound resolvers (DB calls, HTTP fan-out) without any code changes.
 
-One caveat: Spring Security's `SecurityContext` is stored in a `ThreadLocal` and does not propagate automatically to virtual threads. See my earlier post on [how to use DGS virtual threads with Spring Security](../../2024/12/2024-12-11-hot-use-dgs-virtual-threads-and-spring-security.md) for the propagation fix.
+One caveat: Spring Security's `SecurityContext` is stored in a `ThreadLocal` and does not propagate automatically to virtual threads. See my earlier post on [how to use DGS virtual threads with Spring Security](../../2024/12/2024-12-11-how-use-dgs-virtual-threads-and-spring-security.md) for the propagation fix.
 
 **Why it matters:**
 
