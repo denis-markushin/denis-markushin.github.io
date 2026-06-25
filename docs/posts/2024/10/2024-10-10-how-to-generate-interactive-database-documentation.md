@@ -1,12 +1,14 @@
 ---
+authors:
+  - denis
 date: 2024-10-10
 categories:
-  - Plugins 
+  - Spring Boot
 tags:
-  - Gradle
-  - SchemaSpy
-  - Database
-  - Testcontainers
+  - gradle
+  - schemaspy
+  - database
+  - testcontainers
 ---
 
 # How to generate Interactive Database Documentation with SchemaSpy and Gradle
@@ -19,7 +21,7 @@ and [Testcontainers](https://testcontainers.com)
 
 ## Overview
 
-The [schemaspy-gradle-plugin] allows you to generate database documentation via [DDL]. Let`s consider an example. In the
+The [schemaspy-gradle-plugin] allows you to generate database documentation via [DDL]. Let's consider an example. In the
 example I'll use [postgres sakila schema].
 
 The plugin uses the following tools:

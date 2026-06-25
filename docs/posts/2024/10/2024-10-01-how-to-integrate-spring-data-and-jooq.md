@@ -1,11 +1,14 @@
 ---
+authors:
+  - denis
 date: 2024-10-01
 categories:
-  - Kotlin
-  - Jooq
+  - jOOQ
 tags:
-  - Kotlin
-  - Jooq
+  - jooq
+  - spring-data
+  - kotlin
+  - spring-boot
 ---
 
 # Integrating Jooq with Spring Data

@@ -1,13 +1,14 @@
 ---
+authors:
+  - denis
 date: 2025-02-03
 categories:
-  - Openapi
-  - Feign
   - Spring Boot
 tags:
   - openapi
   - feign
   - spring-boot
+  - kotlin
 ---
 
 # Integration of Feign Clients and OpenAPI Generator: Enabling client_credentials

@@ -1,13 +1,17 @@
 ---
-date: 2025-02-23
+authors:
+  - denis
+date:
+  created: 2025-02-23
+  updated: 2026-06-22
 categories:
-  - Kotlin
-  - Spring Boot
   - Testing
 tags:
+  - testing
   - kotlin
   - spring-boot
-  - testing
+  - testcontainers
+  - assertk
 ---
 
 # Level Up Your Kotlin and Spring Boot Testing: Quick Tips and Tricks
@@ -176,7 +180,46 @@ fun Int.uuid(): UUID = UUID.fromString("00000000-0000-0000-0000-${this.toString(
 val entity = anEntity(id = 1.uuid())
 ```
 
+## 5. Integration Tests on a Testcontainers Base Class
+
+For integration tests, put all the wiring in a reusable base class: real infrastructure via Testcontainers,
+a clean database before each test, and tiny helpers to persist records. Subclasses stay focused on behavior.
+
+```kotlin
+@ActiveProfiles("integration-test")
+@TestInstance(Lifecycle.PER_CLASS)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(initializers = [MinioInitializer::class, KafkaInitializer::class])
+abstract class AbstractIntegrationTest {
+
+    @Autowired
+    protected lateinit var dsl: DSLContext
+
+    @BeforeEach
+    fun cleanup() {
+        TABLES_TO_CLEANUP.forEach { dsl.truncate(it).cascade().execute() }
+    }
+
+    protected fun <R : UpdatableRecord<R>> R.storeRec(): R = also {
+        dsl.attach(it)
+        it.store()
+    }
+}
+```
+
+**Why it's useful:**
+
+* **Real infrastructure:** Postgres, Kafka and object storage run in containers, not mocks — no H2 surprises.
+* **Deterministic state:** `TRUNCATE ... CASCADE` before each test removes cross-test coupling.
+* **Less boilerplate:** `storeRec()` attaches and stores any jOOQ record in one call.
+
+## 6. Where DGS and jOOQ test setups live
+
+These techniques are framework-agnostic. The layer-specific test setups build on the `AbstractIntegrationTest` base above and live with their topic:
+
+* **Testing DGS resolvers** — typed GraphQL queries via `DgsQueryExecutor` and the code-generated client: see [Implementing DGS Resolvers → Testing resolvers](../../2026/06/2026-06-22-implementing-dgs-resolvers.md#6-testing-resolvers).
+* **Testing the jOOQ repository layer** — record factories and `storeRec` against real Postgres: see [A jOOQ Repository Pattern → Testing the repository layer](../../2026/06/2026-06-22-jooq-repository-pattern-for-spring-boot.md#7-testing-the-repository-layer).
+
 ## Conclusion
 
-By combining these techniques, you’ll streamline your test setups, reduce boilerplate, and keep your focus on writing
-meaningful test logic. Happy testing!
+By combining these techniques — from record factories to a shared Testcontainers base class — you’ll streamline both unit and integration test setups, reduce boilerplate, and keep your focus on writing meaningful test logic. The layer-specific setups (DGS resolvers, jOOQ repositories) build on the same base; follow the links above when you need them. Happy testing!
