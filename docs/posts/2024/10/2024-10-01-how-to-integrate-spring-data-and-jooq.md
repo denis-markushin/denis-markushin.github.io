@@ -13,8 +13,8 @@ tags:
 
 # Integrating Jooq with Spring Data
 
-In this post, we will explore the [jooq-utils] library, which provides seamless integration between Spring Data and
-Jooq. With [jooq-utils], you can retrieve data using Jooq and get a [`org.springframework.data.domain.Page`](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Page.html)
+In this post, we will explore the [jooq-starter] library, which provides seamless integration between Spring Data and
+Jooq. With [jooq-starter], you can retrieve data using Jooq and get a [`org.springframework.data.domain.Page`](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Page.html)
 object as a
 result, and easily use [`org.springframework.data.domain.Pageable`](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Pageable.html)
 as input for repository methods.
@@ -23,7 +23,7 @@ as input for repository methods.
 
 ## Overview
 
-The `jooq-utils` library simplifies the pagination of Jooq results by enabling you to:
+The `jooq-starter` library simplifies the pagination of Jooq results by enabling you to:
 
 - Use Spring Data’s [`Pageable`](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Pageable.html)
   in your Jooq queries.
@@ -102,8 +102,8 @@ In the UsersService class:
 
 ### 3. Conclusion
 
-You now have a working example of integrating Spring Data’s pagination functionality into Jooq using [jooq-utils]. The
+You now have a working example of integrating Spring Data’s pagination functionality into Jooq using [jooq-starter]. The
 provided repository and service examples demonstrate how to handle pagination in your Jooq queries with minimal code
 changes.
 
-[jooq-utils]: https://github.com/denis-markushin/common-libs/tree/main/jooq-utils
+[jooq-starter]: https://github.com/denis-markushin/common-libs/tree/main/jooq-starter
