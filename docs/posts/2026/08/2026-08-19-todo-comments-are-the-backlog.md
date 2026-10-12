@@ -1,7 +1,9 @@
 ---
 authors:
   - denis
-date: 2026-08-19
+date:
+  created: 2026-08-19
+  updated: 2026-10-12
 categories:
   - Tools
 tags:
@@ -23,6 +25,17 @@ ticket in the tracker — and they never converge on their own. I wrote [puzzler
 stop pretending it is one of them.
 
 <!-- more -->
+
+!!! info "Updated on 2026-10-12 for puzzler 1.1"
+
+    Two releases landed after this post first went out, and both touch things described below.
+    Since 1.1.1 a comment block can hold **several puzzles** — the parser matches every line of a
+    block, not just the first, so back-to-back `TODO`s each file their own ticket (the earlier
+    behavior turned out to be one more invisible bug; see the interlude). And since 1.1.0 Jira's
+    `closeTransition` accepts an **ordered list of transitions**, e.g.
+    `closeTransition: [To merged, Cancelled]` — puzzler applies the first one the workflow offers
+    from the ticket's current status, so a ticket nobody started can still close through
+    `Cancelled` when `Done` is not reachable. The text below is updated to match 1.1.
 
 ## Two sources of truth, zero agreement
 
@@ -71,8 +84,9 @@ Scan → Parse → Hash → Reconcile → Apply
 **Scan** asks `git ls-files` for every tracked file and groups contiguous comment lines into
 blocks. The scanner has no idea what programming language it is looking at — it only knows comment
 prefixes (`//`, `#`, `--`, `*`, `;`), which is why the same binary handles Kotlin, Python, SQL and
-Bash without per-language plugins. **Parse** matches each block's first line against a regexp with
-named groups; subject, type, estimate and labels fall out of the match. **Hash** computes each
+Bash without per-language plugins. **Parse** matches every line of a block against a regexp with
+named groups — so one block can hold several puzzles — and subject, type, estimate and labels
+fall out of the match. **Hash** computes each
 puzzle's identity — more on that in a second. **Reconcile** diffs the puzzles found in the code
 against the tickets currently open in the tracker. **Apply** creates and closes tickets — but only
 on the default branch. On a feature branch, a detached HEAD, or with `--dry-run`, the run degrades
@@ -176,6 +190,15 @@ matches nothing can ship for months. It is also why puzzler's guards exist — w
 mode is "quietly sees less than it should", you want an independent mechanism asking "does this
 result even make sense?".
 
+*Update:* the pattern has since repeated a third time. Until 1.1.1, only the *first* line of a
+comment block could start a puzzle — a `TODO` sitting directly below another one, or below an
+ordinary comment line in the same block, was silently swallowed. Same shape as the other two:
+nothing failed, the puzzle simply did not exist. Now every line of a block is matched, so
+back-to-back markers each get their own ticket, and a marker indented into another puzzle's body
+stays body text. Existing puzzles keep their hashes, so upgrading never re-files what is already
+tracked — but the newly visible ones all surface on the first default-branch run, which is exactly
+what `--dry-run` is for.
+
 ## Try it
 
 puzzler ships as a single Docker image, nothing else — no native binary, no Gradle plugin. A
@@ -200,7 +223,7 @@ docker run --rm -v "$PWD:/repo" -w /repo -e PUZZLER_TOKEN \
 never touches the tracker. Once the plan looks right, drop the flag in a default-branch CI job and
 you are done; the [CI recipes] cover GitHub Actions, GitLab CI and Jenkins.
 
-Honest status report: this is version 0.1. I use it myself, and the primary deployment it was
+Honest status report: this is version 1.1. I use it myself, and the primary deployment it was
 built around is code in GitLab with tickets in Jira Server (there is a [worked example] for
 exactly that setup). Jira Cloud is deliberately not supported yet, and if your tracker is
 something else entirely, the [exec hook] is the escape hatch.
