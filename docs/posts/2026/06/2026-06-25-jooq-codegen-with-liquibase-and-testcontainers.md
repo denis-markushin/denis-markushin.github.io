@@ -25,6 +25,39 @@ migrations, with no extra DDL and no database to keep alive.
 
 <!-- more -->
 
+## Update (October 2026)
+
+Since version 3.0.0 the library no longer ships a jOOQ `Database` subclass. Subclassing
+`PostgresDatabase` tied the compiled class to one jOOQ line, and the only thing it ever did was
+run Liquibase before introspection. Testcontainers already has the right extension point: its
+JDBC driver resolves the database token of a `jdbc:tc:` URL through `ServiceLoader`, which is how
+`pgvector` and `timescaledb` plug in. The library is now such a provider, with nothing from jOOQ
+in it, so it works with whatever jOOQ version runs your generator.
+
+The configuration shrinks to one URL:
+
+```kotlin
+jooq {
+    configuration {
+        jdbc {
+            driver = "org.testcontainers.jdbc.ContainerDatabaseDriver"
+            url = "jdbc:tc:liquibasepostgres:17.5-alpine:///test-db?changelog=$projectDir/src/main/resources/liquibase/changelog-master.yml"
+        }
+        generator {
+            database {
+                name = "org.jooq.meta.postgres.PostgresDatabase"
+                inputSchema = "public"
+                excludes = "databasechangelog|databasechangeloglock"
+            }
+        }
+    }
+}
+```
+
+`liquibasepostgres:17.5-alpine` starts `postgres:17.5-alpine`, applies the changelog named by the
+`changelog` parameter right after the container is up, and hands the connection to jOOQ's plain
+`PostgresDatabase`. The sections below describe the original 2.x API.
+
 ## The problem
 
 The standard jOOQ Gradle plugin reads metadata straight from a JDBC connection. To generate code you
