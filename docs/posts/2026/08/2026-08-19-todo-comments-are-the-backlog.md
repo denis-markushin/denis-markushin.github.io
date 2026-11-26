@@ -3,7 +3,7 @@ authors:
   - denis
 date:
   created: 2026-08-19
-  updated: 2026-10-12
+  updated: 2026-11-26
 categories:
   - Tools
 tags:
@@ -25,6 +25,14 @@ ticket in the tracker — and they never converge on their own. I wrote [puzzler
 stop pretending it is one of them.
 
 <!-- more -->
+
+!!! info "Updated on 2026-11-26 for puzzler 1.1.2"
+
+    1.1.2 changes both guards described below. The empty-scan guard now looks at how many files
+    the scan *read*, not how many puzzles it found, so removing the last puzzle closes its ticket
+    like any other. The mass-closure guard now needs **three or more** closures that are more than
+    half of the backlog; closing one or two tickets always passes. The guards section is updated to
+    match, and its last paragraph explains why the rules changed.
 
 !!! info "Updated on 2026-10-12 for puzzler 1.1"
 
@@ -148,17 +156,21 @@ puzzler: "the puzzles are gone". Followed naively, that observation closes your 
 
 So the reconciler treats its own conclusions with suspicion, in three layers.
 
-**The empty-scan guard.** If the scan finds *zero* puzzles while the tracker still has open
-tickets, the run refuses to close anything and exits with an error. An empty scan almost always
-means a broken environment — wrong working directory, a pattern that no longer matches anything —
-not a heroic commit that resolved every last piece of debt. This guard cannot be overridden, not
-even with `--force`. If the last puzzle genuinely left the codebase, you close the final ticket by
-hand, once.
+**The empty-scan guard.** If the scan reads *zero files* while the tracker still has open
+tickets, the run refuses to close anything and exits with an error. A scan that read nothing
+means a broken environment — an exclude glob that swallows the whole tree, a checkout whose files
+are gone — and says nothing about the puzzles. This guard cannot be overridden, not even with
+`--force`. A scan that read files and found no puzzles is a different story: that is an ordinary
+closure, so removing the last puzzle closes its ticket on the next run.
 
-**The mass-closure guard.** If a run wants to close more than half of the currently open tickets,
-it stops and asks for `--force`. A sudden wave of closures is the signature of a broken hash — a
-regex change, a normalization bug — or a tracker query returning the wrong scope. When it *is*
-intended (you just deleted a deprecated module), `--force` says so explicitly.
+**The mass-closure guard.** If a run wants to close three or more tickets that make up more than
+half of the currently open ones, it stops and asks for `--force`. A sudden wave of closures is the
+signature of a broken hash — a regex change, a normalization bug — a typo in the puzzle pattern, a
+run in the wrong repository, or a tracker query returning the wrong scope. When it *is* intended
+(you just deleted a deprecated module), `--force` says so explicitly. Closing one or two tickets
+always passes, whatever share of the backlog they are. The price is bounded: a pattern typo or a
+run in the wrong repository can close at most two tickets before the guard steps in, and once the
+cause is fixed, the next run files those puzzles again as new tickets.
 
 **Previews are fearless, real runs are paranoid.** During `--dry-run` or on a non-default branch,
 a tripped guard is only a warning — a preview has nothing to lose by showing you what the guard
@@ -168,6 +180,17 @@ code. You get full information when it is safe, and a hard stop when it is not.
 None of this is sophisticated computer science. But I have come to think it is the actual product:
 anyone can write a script that files tickets from grep output; the hard part is a tool you can
 point at a live tracker on every push and not think about it again.
+
+*Update:* both guards were written with a big backlog in mind, and a small one exposed them. In a
+repository with a single puzzle, removing that `TODO` is the most ordinary thing that can happen —
+and the empty-scan guard read it as a broken environment, because zero puzzles looked exactly like
+zero files. The mass-closure guard had the same blind spot from the other side: with one or two
+open tickets every closure is "more than half", so such a backlog could never be emptied or
+reworded without `--force`. Earlier versions of this post told you to close the last ticket by
+hand; that was a workaround dressed up as a rule. Since 1.1.2 the empty-scan guard measures what
+it actually suspects — whether the scan read anything — and the mass-closure guard starts at three
+closures. A guard deserves the same question it asks of the scanner: does this refusal even make
+sense?
 
 ## Interlude: the two invisible bugs
 
