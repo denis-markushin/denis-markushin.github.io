@@ -1,5 +1,6 @@
 ---
-date: YYYY-MM-DD
+date:
+  created: YYYY-MM-DD
 categories:
   -
 tags:

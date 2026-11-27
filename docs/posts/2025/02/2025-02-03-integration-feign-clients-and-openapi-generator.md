@@ -1,7 +1,8 @@
 ---
 authors:
   - denis
-date: 2025-02-03
+date:
+  created: 2025-02-03
 categories:
   - Spring Boot
 tags:
