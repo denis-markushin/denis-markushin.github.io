@@ -3,6 +3,10 @@ authors:
   - denis
 date:
   created: 2026-06-22
+description: >-
+  A consistent GraphQL schema is easier to read, evolve, and compose across a federated graph. Here
+  are the schema-design conventions I apply in every Kotlin/Spring service built on the Netflix DGS
+  Framework.
 categories:
   - GraphQL & DGS
 tags:

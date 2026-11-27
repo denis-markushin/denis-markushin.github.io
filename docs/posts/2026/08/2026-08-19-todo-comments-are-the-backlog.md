@@ -4,6 +4,10 @@ authors:
 date:
   created: 2026-08-19
   updated: 2026-11-26
+description: >-
+  Technical debt always ends up with two sources of truth — the comment next to the code and the
+  ticket in the tracker — and they never converge on their own. I wrote puzzler to make the tracker
+  stop pretending it is one of them.
 categories:
   - Tools
 tags:

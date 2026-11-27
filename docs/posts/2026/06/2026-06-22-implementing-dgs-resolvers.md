@@ -3,6 +3,9 @@ authors:
   - denis
 date:
   created: 2026-06-22
+description: >-
+  This is the implementation companion to my GraphQL schema conventions. Here is how I wire those
+  schemas up with Netflix DGS and my graphql-dgs-starter.
 categories:
   - GraphQL & DGS
 tags:

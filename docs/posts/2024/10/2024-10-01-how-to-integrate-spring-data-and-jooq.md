@@ -3,6 +3,9 @@ authors:
   - denis
 date:
   created: 2024-10-01
+description: >-
+  In this post, we will explore the jooq-starter library, which provides seamless integration
+  between Spring Data and Jooq.
 categories:
   - jOOQ
 tags:

@@ -4,6 +4,10 @@ authors:
 date:
   created: 2025-02-23
   updated: 2026-06-22
+description: >-
+  When writing tests in Kotlin and Spring Boot, a few well-chosen techniques can make your tests
+  more readable, maintainable, and concise. Here are a couple of handy tips that you can apply to
+  your projects today.
 categories:
   - Testing
 tags:
