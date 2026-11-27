@@ -1,7 +1,8 @@
 ---
 authors:
   - denis
-date: 2026-06-25
+date:
+  created: 2026-06-25
 categories:
   - jOOQ
 tags:

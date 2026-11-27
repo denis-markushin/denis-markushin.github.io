@@ -1,7 +1,8 @@
 ---
 authors:
   - denis
-date: 2024-12-11
+date:
+  created: 2024-12-11
 categories:
   - GraphQL & DGS
 tags:
