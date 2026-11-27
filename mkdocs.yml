@@ -93,6 +93,9 @@ plugins:
         as_update: date.updated
   - glightbox
 
+exclude_docs: |
+  /superpowers/
+
 remote_branch: gh-pages
 
 strict: true
