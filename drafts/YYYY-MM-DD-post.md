@@ -1,4 +1,6 @@
 ---
+authors:
+  - denis
 date:
   created: YYYY-MM-DD
 categories:
