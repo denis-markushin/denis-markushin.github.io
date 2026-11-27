@@ -3,6 +3,9 @@ authors:
   - denis
 date:
   created: 2025-02-03
+description: >-
+  In this post, we will explore how to integrate the OpenAPI Generator Gradle Plugin with Spring
+  Feign clients to obtain an OAuth 2.0 token using the client_credentials flow.
 categories:
   - Spring Boot
 tags:

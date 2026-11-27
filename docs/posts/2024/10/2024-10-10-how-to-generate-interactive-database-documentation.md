@@ -3,6 +3,8 @@ authors:
   - denis
 date:
   created: 2024-10-10
+description: >-
+  Gradle plugin that lets you generate database documentation using Schemaspy and Testcontainers
 categories:
   - Spring Boot
 tags:

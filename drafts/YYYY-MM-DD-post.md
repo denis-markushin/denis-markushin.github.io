@@ -3,6 +3,8 @@ authors:
   - denis
 date:
   created: YYYY-MM-DD
+description: >-
+  Short description
 categories:
   -
 tags:

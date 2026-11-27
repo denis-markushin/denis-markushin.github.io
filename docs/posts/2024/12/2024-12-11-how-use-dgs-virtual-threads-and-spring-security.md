@@ -3,6 +3,10 @@ authors:
   - denis
 date:
   created: 2024-12-11
+description: >-
+  In this post, I’ll explain how to use virtual threads with Netflix DGS in a GraphQL application.
+  While exploring this feature, I encountered several undocumented challenges and found solutions
+  that I’m excited to share.
 categories:
   - GraphQL & DGS
 tags:

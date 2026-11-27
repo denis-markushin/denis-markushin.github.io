@@ -3,6 +3,10 @@ authors:
   - denis
 date:
   created: 2026-06-22
+description: >-
+  jOOQ gives you type-safe SQL generated from your real database. Over several services I converged
+  on a small repository pattern that keeps data access typed, testable, and free of leaking
+  DSLContext.
 categories:
   - jOOQ
 tags:

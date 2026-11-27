@@ -3,6 +3,11 @@ authors:
   - denis
 date:
   created: 2026-06-25
+description: >-
+  jOOQ's code generator needs a real database schema to read from. If your schema lives in Liquibase
+  changelogs, you are usually forced into one of two awkward options: maintain a separate DDL script
+  just for codegen, or point the generator at a long-running database that someone has to keep
+  migrated.
 categories:
   - jOOQ
 tags:
