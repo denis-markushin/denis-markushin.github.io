@@ -39,3 +39,4 @@ out/
 
 /site/
 /docs/superpowers/
+__pycache__/

@@ -34,6 +34,11 @@ jobs:
         run: pip install -r requirements.txt
       - name: Build the site
         run: mkdocs build
+      - name: Check the built site
+        run: python -m unittest discover --start-directory tests
+        timeout-minutes: 5
+        env:
+          SITE: site
       - name: Upload the site for Pages
         if: github.event_name == 'push'
         uses: actions/upload-pages-artifact@v5
