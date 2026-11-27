@@ -23,7 +23,7 @@ jobs:
           python-version: 3.x
       - name: Key the cache by week
         run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-      - name: Restore the Material cache
+      - name: Cache plugin data
         uses: actions/cache@v6
         with:
           key: mkdocs-material-${{ env.cache_id }}
