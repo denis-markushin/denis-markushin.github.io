@@ -5,30 +5,51 @@ on:
       - main
   pull_request:
 permissions:
-  contents: write
+  contents: read
+concurrency:
+  group: build-mkdocs-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - name: Check out with history for feed dates
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Configure Git Credentials
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-      - uses: actions/setup-python@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
         with:
           python-version: 3.x
-      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-      - uses: actions/cache@v6
+      - name: Key the cache by week
+        run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+      - name: Restore the Material cache
+        uses: actions/cache@v6
         with:
           key: mkdocs-material-${{ env.cache_id }}
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: pip install -r requirements.txt
-      - if: github.event_name == 'pull_request'
+      - name: Install MkDocs
+        run: pip install -r requirements.txt
+      - name: Build the site
         run: mkdocs build
-      - if: github.event_name == 'push'
-        run: mkdocs gh-deploy --force --no-history
+      - name: Upload the site for Pages
+        if: github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site/
+  deploy:
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy the site to Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

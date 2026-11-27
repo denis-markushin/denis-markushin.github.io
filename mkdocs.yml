@@ -96,6 +96,4 @@ plugins:
 exclude_docs: |
   /superpowers/
 
-remote_branch: gh-pages
-
 strict: true
