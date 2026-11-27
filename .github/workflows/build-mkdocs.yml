@@ -6,27 +6,35 @@ on:
   pull_request:
 permissions:
   contents: read
+concurrency:
+  group: build-mkdocs-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - name: Check out with history for feed dates
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
         with:
           python-version: 3.x
-      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-      - uses: actions/cache@v6
+      - name: Key the cache by week
+        run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+      - name: Restore the Material cache
+        uses: actions/cache@v6
         with:
           key: mkdocs-material-${{ env.cache_id }}
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: pip install -r requirements.txt
-      - name: Build
+      - name: Install MkDocs
+        run: pip install -r requirements.txt
+      - name: Build the site
         run: mkdocs build
-      - name: Upload
+      - name: Upload the site for Pages
         if: github.event_name == 'push'
         uses: actions/upload-pages-artifact@v5
         with:
@@ -42,6 +50,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy
+      - name: Deploy the site to Pages
         id: deployment
         uses: actions/deploy-pages@v5
