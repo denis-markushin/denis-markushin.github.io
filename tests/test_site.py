@@ -10,6 +10,7 @@ import unittest
 import urllib.parse
 import xml.etree.ElementTree
 
+from mkdocs.commands.build import build
 from mkdocs.config import load_config
 from mkdocs.structure.files import get_files
 
@@ -132,3 +133,15 @@ class SiteTest(unittest.TestCase):
             config = load_config(str(project() / "mkdocs.yml"), docs_dir=docs, plugins=[])
             pages = [file.src_uri for file in get_files(config).documentation_pages()]
         self.assertEqual(["index.md"], pages, "notes from docs/superpowers reach the site")
+
+    def test_page_keeps_the_quotes_of_its_description(self):
+        with tempfile.TemporaryDirectory() as temp:
+            words = f'Say "{secrets.token_hex(4)}" twice & return List<String>'
+            docs = pathlib.Path(temp, "docs")
+            docs.mkdir()
+            lines = ["---", "description: >-", f"  {words}", "---", "", "# Home", ""]
+            docs.joinpath("index.md").write_text("\n".join(lines), encoding="utf-8")
+            site = pathlib.Path(temp, "site")
+            build(load_config(str(project() / "mkdocs.yml"), docs_dir=str(docs), site_dir=str(site), plugins=[]))
+            summary = Site(site).summary("/")
+        self.assertEqual(words, summary, "page cuts its description at a quote")
