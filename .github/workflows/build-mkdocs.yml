@@ -12,8 +12,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      current: ${{ steps.tip.outputs.current }}
     steps:
       - name: Check out with history for feed dates
         uses: actions/checkout@v7
@@ -32,25 +30,14 @@ jobs:
         timeout-minutes: 5
         env:
           SITE: site
-      - name: Check that main still points here
-        id: tip
-        if: github.event_name == 'push'
-        run: |
-          tip="$(git ls-remote --exit-code origin refs/heads/main)"
-          tip="${tip%%[[:space:]]*}"
-          if [ "$tip" = "$GITHUB_SHA" ]; then
-            echo "current=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "::notice title=Deploy skipped::main moved from $GITHUB_SHA to $tip"
-          fi
       - name: Upload the site for Pages
-        if: steps.tip.outputs.current == 'true'
+        if: github.event_name == 'push'
         uses: actions/upload-pages-artifact@v5
         with:
           path: site/
   deploy:
     needs: build
-    if: needs.build.outputs.current == 'true'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       pages: write
